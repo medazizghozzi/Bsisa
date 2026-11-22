@@ -1,0 +1,23 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" width="200" height="160">
+  <!-- Leaf cluster -->
+  <g transform="translate(100,70)" fill="none" stroke="#3d6b35" stroke-width="1.5">
+    <!-- Center leaf -->
+    <ellipse cx="0" cy="-28" rx="18" ry="32" transform="rotate(-5)" fill="#3d6b35" opacity="0.12"/>
+    <path d="M0,0 C-8,-20 -12,-42 0,-56 C12,-42 8,-20 0,0" fill="#3d6b35" opacity="0.85"/>
+    <path d="M0,-10 C-5,-20 -8,-35 0,-50" stroke="#5a8a52" stroke-width="0.8" fill="none"/>
+    <path d="M0,-15 l-6,-8 M0,-20 l5,-8 M0,-28 l-5,-8 M0,-35 l4,-7"/>
+    <!-- Left leaf -->
+    <path d="M-5,-5 C-18,-15 -32,-22 -38,-14 C-32,-6 -18,-4 -5,-5" fill="#3d6b35" opacity="0.75" transform="rotate(20)"/>
+    <path d="M-5,-5 C-15,-10 -25,-12 -32,-10" stroke="#5a8a52" stroke-width="0.7" fill="none" transform="rotate(20)"/>
+    <!-- Right leaf -->
+    <path d="M5,-5 C18,-15 32,-22 38,-14 C32,-6 18,-4 5,-5" fill="#3d6b35" opacity="0.75" transform="rotate(-20)"/>
+    <path d="M5,-5 C15,-10 25,-12 32,-10" stroke="#5a8a52" stroke-width="0.7" fill="none" transform="rotate(-20)"/>
+    <!-- Small bottom-left leaf -->
+    <path d="M-3,0 C-14,2 -24,8 -26,16 C-16,14 -8,8 -3,0" fill="#3d6b35" opacity="0.65" transform="rotate(35)"/>
+    <!-- Stem -->
+    <path d="M0,0 L0,18" stroke="#3d6b35" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <!-- ECORAY text -->
+  <text x="100" y="128" font-family="'Georgia', serif" font-size="28" font-weight="900"
+        fill="#3d6b35" text-anchor="middle" letter-spacing="4">ECORAY</text>
+</svg>

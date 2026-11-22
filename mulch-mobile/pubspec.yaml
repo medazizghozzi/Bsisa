@@ -1,0 +1,39 @@
+name: ecoray
+description: EcoRay mobile app for the Mulch Advisory Platform in Tunisia.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.13.0 <4.0.0"
+  flutter: ">=3.47.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_map: ^7.0.2
+  flutter_svg: ^2.0.10
+  http: ^1.2.2
+  latlong2: ^0.9.1
+  material_ui: ^1.11.1
+  shared_preferences: ^2.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/ecoray-logo.svg
+    - assets/images/hero_1.jpg
+    - assets/images/hero_2.jpg
+    - assets/images/hero_3.jpg
+    - assets/images/hero_4.jpg
+    - assets/images/hero_5.jpg
+    - assets/images/img_sq_1.jpg
+    - assets/images/img_sq_3.jpg
+    - assets/images/img_sq_4.jpg
+    - assets/images/img_sq_5.jpg
+    - assets/images/img_sq_6.jpg
+    - assets/images/img_sq_8.jpg
