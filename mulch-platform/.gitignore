@@ -1,0 +1,5 @@
+﻿node_modules/
+db/mulch.db
+db/mulch.db-shm
+db/mulch.db-wal
+*.zip

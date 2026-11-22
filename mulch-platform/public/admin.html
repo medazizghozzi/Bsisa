@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — Mulch Advisory Platform</title>
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── ECORAY Loading Screen ─────────────────────────────────── */
+    #ecoray-loader {
+      position: fixed; inset: 0; z-index: 99999;
+      background: #f4f1ec;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      transition: opacity .5s ease, visibility .5s ease;
+    }
+    #ecoray-loader.fade-out { opacity: 0; visibility: hidden; }
+    [data-theme="dark"] #ecoray-loader { background: #0f1510; }
+
+    .loader-logo { width: 110px; margin-bottom: 8px; animation: logo-pop .6s cubic-bezier(.34,1.56,.64,1) both; }
+    @keyframes logo-pop {
+      from { opacity:0; transform: scale(.6) translateY(16px); }
+      to   { opacity:1; transform: scale(1) translateY(0); }
+    }
+    .loader-brand {
+      font-family: 'Georgia', serif; font-size: 2rem; font-weight: 900;
+      letter-spacing: 6px; color: #3d6b35;
+      animation: logo-pop .6s .1s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    [data-theme="dark"] .loader-brand { color: #4a9e64; }
+    .loader-tagline {
+      font-size: .72rem; color: #7a7570; letter-spacing: 2px;
+      text-transform: uppercase; margin-top: 3px; margin-bottom: 28px;
+      animation: logo-pop .5s .2s ease both;
+    }
+    .loader-dots { display:flex; gap:8px; margin-bottom:18px; animation: logo-pop .4s .3s ease both; }
+    .loader-dots span {
+      width:9px; height:9px; border-radius:50%;
+      background:#3d6b35; opacity:.3;
+      animation: dot-bounce 1.2s infinite ease-in-out;
+    }
+    .loader-dots span:nth-child(2) { animation-delay:.15s; }
+    .loader-dots span:nth-child(3) { animation-delay:.3s; }
+    @keyframes dot-bounce {
+      0%,80%,100% { transform:scale(.7); opacity:.3; }
+      40%          { transform:scale(1.1); opacity:1; }
+    }
+    .loader-bar-wrap { width:160px; height:3px; background:rgba(61,107,53,.15); border-radius:99px; overflow:hidden; animation: logo-pop .4s .3s ease both; }
+    .loader-bar { height:100%; width:0%; background:linear-gradient(90deg,#3d6b35,#7abd6e); border-radius:99px; animation:bar-fill 1.6s .4s ease forwards; }
+    @keyframes bar-fill { to { width:100%; } }
+    .loader-status { font-size:.7rem; color:#aaa; margin-top:8px; letter-spacing:1px; text-transform:uppercase; animation: logo-pop .4s .4s ease both; }
+    .loader-badge { background:#3d6b35; color:#fff; font-size:.62rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; border-radius:99px; padding:3px 10px; margin-top:12px; animation: logo-pop .4s .5s ease both; }
+    /* ── Theme tokens ─────────────────────────────────────────── */
+    :root {
+      --bg:        #f4f1ec;
+      --surface:   #ffffff;
+      --border:    #e2ddd7;
+      --text:      #141412;
+      --text-2:    #3c3b38;
+      --text-m:    #7a7570;
+      --green:     #116530;
+      --green-l:   #d1e9d8;
+      --green-xl:  #eaf4ed;
+      --red:       #b03535;
+      --red-l:     #fbe8e8;
+      --amber:     #b87820;
+      --amber-l:   #fdf0d8;
+      --blue:      #1a56a4;
+      --blue-l:    #ddeaf8;
+      --sidebar-w: 240px;
+    }
+    [data-theme="dark"] {
+      --bg:      #0f1510;
+      --surface: #192119;
+      --border:  rgba(255,255,255,.09);
+      --text:    #eeeae3;
+      --text-2:  rgba(238,234,227,.72);
+      --text-m:  rgba(238,234,227,.42);
+      --green:   #4a9e64;
+      --green-l: rgba(74,158,100,.2);
+      --green-xl:rgba(74,158,100,.08);
+      --red:     #d05050;
+      --red-l:   rgba(208,80,80,.14);
+      --amber:   #d49030;
+      --amber-l: rgba(212,144,48,.14);
+      --blue:    #5588d8;
+      --blue-l:  rgba(85,136,216,.14);
+    }
+
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      transition: background .2s, color .2s;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Sidebar ──────────────────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+      transition: background .2s, border-color .2s;
+    }
+    .sidebar-logo {
+      padding: 20px 18px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sidebar-logo .logo-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--green); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+    .sidebar-logo .logo-text { font-size: .88rem; font-weight: 700; color: var(--text); }
+    .sidebar-logo .logo-sub  { font-size: .65rem; color: var(--text-m); }
+
+    .sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+    .nav-section-label {
+      font-size: .58rem; font-weight: 700; letter-spacing: 1.4px;
+      text-transform: uppercase; color: var(--text-m);
+      padding: 8px 10px 4px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 8px; cursor: pointer;
+      font-size: .84rem; font-weight: 500; color: var(--text-2);
+      border: none; background: transparent; width: 100%; text-align: left;
+      transition: background .15s, color .15s;
+      position: relative;
+    }
+    .nav-item:hover { background: var(--green-xl); color: var(--green); }
+    .nav-item.active { background: var(--green-l); color: var(--green); font-weight: 600; }
+    .nav-item i { font-size: 1rem; width: 18px; text-align: center; }
+    .nav-badge {
+      margin-left: auto; background: var(--red);
+      color: #fff; border-radius: 99px; font-size: .6rem;
+      padding: 1px 6px; font-weight: 700;
+    }
+
+    .sidebar-footer {
+      padding: 14px 18px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+      font-size: .78rem; color: var(--text-m);
+    }
+    .sidebar-footer .admin-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--green-l); color: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .78rem; flex-shrink: 0;
+    }
+    .sidebar-footer .admin-name { font-weight: 600; color: var(--text); font-size: .8rem; }
+
+    /* ── Main content ─────────────────────────────────────────── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+      transition: background .2s;
+    }
+    .topbar-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+    .theme-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1px solid var(--border); background: var(--bg);
+      color: var(--text-m); cursor: pointer; font-size: .95rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s;
+    }
+    .theme-btn:hover { border-color: var(--green); color: var(--green); }
+
+    .content { padding: 24px; flex: 1; }
+
+    /* ── Pages ────────────────────────────────────────────────── */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ── Login screen ─────────────────────────────────────────── */
+    .login-wrap {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg);
+    }
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 32px;
+      width: 100%; max-width: 380px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.07);
+    }
+    .login-card h2 { font-size: 1.3rem; font-weight: 800; letter-spacing: -.5px; margin-bottom: 4px; }
+    .login-card p  { font-size: .84rem; color: var(--text-m); margin-bottom: 24px; }
+
+    /* ── Stat cards ───────────────────────────────────────────── */
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      transition: all .15s;
+    }
+    .stat-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.07); transform: translateY(-1px); }
+    .stat-card .s-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-m); margin-bottom: 6px; }
+    .stat-card .s-value { font-size: 1.9rem; font-weight: 900; letter-spacing: -1.5px; color: var(--text); line-height: 1; }
+    .stat-card .s-sub   { font-size: .74rem; color: var(--text-m); margin-top: 4px; }
+    .stat-card.green    { border-left: 3px solid var(--green); }
+    .stat-card.amber    { border-left: 3px solid var(--amber); }
+    .stat-card.red      { border-left: 3px solid var(--red); }
+    .stat-card.blue     { border-left: 3px solid var(--blue); }
+
+    /* ── Tables ───────────────────────────────────────────────── */
+    .data-table {
+      width: 100%; border-collapse: collapse;
+      background: var(--surface);
+      border-radius: 12px; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .data-table th {
+      background: var(--bg);
+      font-size: .65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--text-m); padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    .data-table td {
+      padding: 11px 14px; font-size: .84rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-2);
+      vertical-align: middle;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: var(--green-xl); }
+
+    /* ── Badges ───────────────────────────────────────────────── */
+    .badge-pill {
+      display: inline-flex; align-items: center; gap: 3px;
+      border-radius: 99px; padding: 2px 9px;
+      font-size: .68rem; font-weight: 600;
+    }
+    .bp-pending  { background: var(--amber-l); color: var(--amber); }
+    .bp-approved { background: var(--green-l); color: var(--green); }
+    .bp-rejected { background: var(--red-l);   color: var(--red); }
+    .bp-sms      { background: var(--blue-l);  color: var(--blue); }
+    .bp-email    { background: var(--green-l); color: var(--green); }
+    .bp-whatsapp { background: var(--green-l); color: #128c7e; }
+    .bp-scheduled { background: var(--blue-l); color: var(--blue); }
+    .bp-completed { background: var(--green-l);color: var(--green); }
+
+    /* ── Buttons ──────────────────────────────────────────────── */
+    .btn-green  { background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 7px 14px; font-size: .78rem; font-weight: 600; cursor: pointer; transition: filter .15s; }
+    .btn-green:hover  { filter: brightness(1.1); }
+    .btn-red    { background: var(--red);   color: #fff; border: none; border-radius: 8px; padding: 7px 14px; font-size: .78rem; font-weight: 600; cursor: pointer; }
+    .btn-red:hover    { filter: brightness(1.1); }
+    .btn-ghost  { background: transparent; border: 1px solid var(--border); border-radius: 8px; padding: 7px 14px; font-size: .78rem; font-weight: 500; color: var(--text-2); cursor: pointer; }
+    .btn-ghost:hover  { border-color: var(--green); color: var(--green); }
+
+    /* ── Form elements ────────────────────────────────────────── */
+    .form-ctrl {
+      width: 100%; padding: 10px 13px;
+      border: 1px solid var(--border); border-radius: 8px;
+      font-size: .88rem; background: var(--bg); color: var(--text);
+      font-family: inherit;
+      transition: border-color .15s;
+    }
+    .form-ctrl:focus { outline: none; border-color: var(--green); }
+    .form-label-sm { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-m); margin-bottom: 5px; display: block; }
+
+    /* ── Toast ────────────────────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--text); color: var(--bg);
+      padding: 10px 20px; border-radius: 99px;
+      font-size: .82rem; font-weight: 500;
+      z-index: 9999; opacity: 0;
+      transition: opacity .2s, transform .2s;
+      transform: translateY(6px);
+      box-shadow: 0 4px 20px rgba(0,0,0,.2);
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── Detail panel ─────────────────────────────────────────── */
+    .detail-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .detail-panel h4 { font-size: .9rem; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+
+    /* ── Channel item ─────────────────────────────────────────── */
+    .channel-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .channel-row .ch-icon { font-size: 1.1rem; width: 24px; }
+    .channel-row .ch-dest { font-size: .84rem; color: var(--text-2); flex: 1; }
+    .toggle-switch {
+      position: relative; width: 36px; height: 20px; cursor: pointer;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; inset: 0; background: var(--border);
+      border-radius: 99px; transition: background .2s;
+    }
+    .slider::before {
+      content: ''; position: absolute;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #fff; top: 3px; left: 3px;
+      transition: transform .2s;
+    }
+    input:checked + .slider { background: var(--green); }
+    input:checked + .slider::before { transform: translateX(16px); }
+
+    /* ── Activity log ─────────────────────────────────────────── */
+    .log-row {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+      font-size: .82rem;
+    }
+    .log-row:last-child { border-bottom: none; }
+    .log-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; margin-top: 4px; }
+    .log-action { font-weight: 600; color: var(--text); }
+    .log-time   { color: var(--text-m); font-size: .74rem; }
+
+    /* ── Mobile sidebar ───────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); transition: transform .2s; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ ECORAY LOADING SCREEN ════════════════════════════════════ -->
+<div id="ecoray-loader">
+  <img src="assets/img/ecoray-logo.svg" class="loader-logo" alt="Ecoray" />
+  <div class="loader-brand">ECORAY</div>
+  <div class="loader-tagline">Admin Console</div>
+  <div class="loader-dots"><span></span><span></span><span></span></div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+  <div class="loader-status">Initializing…</div>
+  <div class="loader-badge">🛡️ Admin</div>
+</div>
+
+<!-- ══ LOGIN (shown when not authenticated) ══════════════════════ -->
+<div id="login-screen" class="login-wrap" style="width:100%;">
+  <div class="login-card">
+    <div style="font-size:2rem;margin-bottom:12px;">🛡️</div>
+    <h2>Admin Portal</h2>
+    <p>Mulch Advisory Platform — Management Console</p>
+    <div style="margin-bottom:14px;">
+      <label class="form-label-sm">Admin Phone</label>
+      <input type="tel" id="admin-phone-input" class="form-ctrl" placeholder="+21600000000" />
+      <div style="font-size:.74rem;color:var(--text-m);margin-top:5px;">Demo admin: <strong>+21600000000</strong></div>
+      <div id="login-err" style="color:var(--red);font-size:.78rem;margin-top:5px;display:none;"></div>
+    </div>
+    <button class="btn-green" style="width:100%;padding:11px;" onclick="adminLogin()">
+      Sign in to Admin →
+    </button>
+    <div style="text-align:center;margin-top:14px;">
+      <a href="/" style="font-size:.78rem;color:var(--text-m);">← Back to farmer app</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ADMIN APP (shown after login) ════════════════════════════ -->
+<div id="admin-app" style="display:none;width:100%;display:none;">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <img src="assets/img/ecoray-logo.svg" style="height:32px;width:auto;" alt="Ecoray"/>
+      <div>
+        <div class="logo-text" style="font-family:'Georgia',serif;letter-spacing:2px;">ECORAY</div>
+        <div class="logo-sub">Admin Console</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <button class="nav-item active" onclick="showSection('overview')">
+        <i class="bi bi-grid-1x2-fill"></i> Dashboard
+      </button>
+
+      <div class="nav-section-label" style="margin-top:8px;">Accounts</div>
+      <button class="nav-item" onclick="showSection('pending')">
+        <i class="bi bi-person-check-fill"></i> Pending Approvals
+        <span class="nav-badge" id="pending-badge">0</span>
+      </button>
+      <button class="nav-item" onclick="showSection('farmers')">
+        <i class="bi bi-people-fill"></i> All Farmers
+      </button>
+
+      <div class="nav-section-label" style="margin-top:8px;">Operations</div>
+      <button class="nav-item" onclick="showSection('requests')">
+        <i class="bi bi-truck"></i> Service Requests
+      </button>
+      <button class="nav-item" onclick="showSection('alerts')">
+        <i class="bi bi-bell-fill"></i> Alert History
+      </button>
+      <button class="nav-item" onclick="showSection('send-alert')">
+        <i class="bi bi-send-fill"></i> Send Alert
+      </button>
+
+      <div class="nav-section-label" style="margin-top:8px;">System</div>
+      <button class="nav-item" onclick="showSection('logs')">
+        <i class="bi bi-clock-history"></i> Activity Log
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-avatar" id="admin-avatar">A</div>
+      <div>
+        <div class="admin-name" id="admin-name-display">Admin</div>
+        <div style="font-size:.68rem;color:var(--text-m);" id="admin-phone-display"></div>
+      </div>
+      <button class="btn-ghost" style="margin-left:auto;padding:5px 8px;font-size:.72rem;" onclick="adminLogout()">Exit</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="btn-ghost d-md-none" style="padding:5px 8px;" onclick="document.getElementById('sidebar').classList.toggle('open')">
+          <i class="bi bi-list"></i>
+        </button>
+        <div class="topbar-title" id="topbar-title">Dashboard</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+        <a href="/" class="btn-ghost" style="font-size:.78rem;text-decoration:none;padding:6px 12px;">
+          <i class="bi bi-box-arrow-left"></i> Farmer App
+        </a>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── OVERVIEW ─────────────────────────────────────────── -->
+      <div id="section-overview" class="page active">
+        <div class="row g-3 mb-4" id="stats-grid">
+          <!-- injected by JS -->
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="detail-panel">
+              <h4><i class="bi bi-person-check text-success me-2"></i>Pending Approvals</h4>
+              <div id="overview-pending-list">Loading…</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="detail-panel">
+              <h4><i class="bi bi-clock-history me-2"></i>Recent Activity</h4>
+              <div id="overview-log-list">Loading…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PENDING APPROVALS ─────────────────────────────────── -->
+      <div id="section-pending" class="page">
+        <div style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <h4 style="font-weight:800;letter-spacing:-.3px;">Pending Approvals</h4>
+            <p style="font-size:.82rem;color:var(--text-m);">New farmer accounts waiting for review</p>
+          </div>
+          <button class="btn-ghost" onclick="loadPending()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+        </div>
+        <div id="pending-table-wrap">Loading…</div>
+      </div>
+
+      <!-- ── ALL FARMERS ───────────────────────────────────────── -->
+      <div id="section-farmers" class="page">
+        <div style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h4 style="font-weight:800;letter-spacing:-.3px;">All Farmers</h4>
+            <p style="font-size:.82rem;color:var(--text-m);">Registered farmer accounts</p>
+          </div>
+          <input type="text" class="form-ctrl" style="max-width:220px;" placeholder="Search name / phone…"
+                 oninput="filterFarmers(this.value)" />
+        </div>
+        <div style="overflow-x:auto;">
+          <div id="farmers-table-wrap">Loading…</div>
+        </div>
+        <!-- Farmer detail panel -->
+        <div id="farmer-detail-panel" style="display:none;margin-top:20px;"></div>
+      </div>
+
+      <!-- ── SERVICE REQUESTS ──────────────────────────────────── -->
+      <div id="section-requests" class="page">
+        <div style="margin-bottom:16px;">
+          <h4 style="font-weight:800;letter-spacing:-.3px;">Service Requests</h4>
+          <p style="font-size:.82rem;color:var(--text-m);">Mulch application requests from farmers</p>
+        </div>
+        <div style="overflow-x:auto;" id="requests-table-wrap">Loading…</div>
+      </div>
+
+      <!-- ── ALERT HISTORY ─────────────────────────────────────── -->
+      <div id="section-alerts" class="page">
+        <div style="margin-bottom:16px;">
+          <h4 style="font-weight:800;letter-spacing:-.3px;">Alert History</h4>
+          <p style="font-size:.82rem;color:var(--text-m);">All SMS / email / WhatsApp alerts sent</p>
+        </div>
+        <div style="overflow-x:auto;" id="alerts-table-wrap">Loading…</div>
+      </div>
+
+      <!-- ── SEND ALERT ────────────────────────────────────────── -->
+      <div id="section-send-alert" class="page">
+        <div style="margin-bottom:16px;">
+          <h4 style="font-weight:800;letter-spacing:-.3px;">Send Alert</h4>
+          <p style="font-size:.82rem;color:var(--text-m);">Manually send an alert to a farmer via all their enabled channels</p>
+        </div>
+        <div class="detail-panel" style="max-width:520px;">
+          <div style="margin-bottom:14px;">
+            <label class="form-label-sm">Farmer</label>
+            <select class="form-ctrl" id="alert-farmer-select"><option value="">Select farmer…</option></select>
+          </div>
+          <div style="margin-bottom:14px;">
+            <label class="form-label-sm">Message</label>
+            <textarea class="form-ctrl" id="alert-message" rows="4"
+              placeholder="Type your alert message…"></textarea>
+          </div>
+          <div id="alert-send-channels" style="margin-bottom:14px;font-size:.8rem;color:var(--text-m);">
+            Select a farmer to see their channels.
+          </div>
+          <button class="btn-green" style="width:100%;padding:11px;" onclick="sendManualAlert()">
+            <i class="bi bi-send-fill me-2"></i>Send Alert
+          </button>
+        </div>
+      </div>
+
+      <!-- ── LOGS ──────────────────────────────────────────────── -->
+      <div id="section-logs" class="page">
+        <div style="margin-bottom:16px;">
+          <h4 style="font-weight:800;letter-spacing:-.3px;">Activity Log</h4>
+          <p style="font-size:.82rem;color:var(--text-m);">Admin actions audit trail</p>
+        </div>
+        <div class="detail-panel" id="logs-container">Loading…</div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /admin-app -->
+
+<div id="toast"></div>
+
+<script>
+// ── State ───────────────────────────────────────────────────────
+let adminPhone = null;
+let farmersCache = [];
+const SECTIONS = ['overview','pending','farmers','requests','alerts','send-alert','logs'];
+const SECTION_TITLES = {
+  'overview': 'Dashboard', 'pending': 'Pending Approvals', 'farmers': 'All Farmers',
+  'requests': 'Service Requests', 'alerts': 'Alert History',
+  'send-alert': 'Send Alert', 'logs': 'Activity Log'
+};
+
+// ── API ─────────────────────────────────────────────────────────
+async function api(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json', 'x-admin-phone': adminPhone } };
+  if (body) opts.body = JSON.stringify(body);
+  const res  = await fetch(path, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
+}
+const GET  = p    => api('GET', p);
+const POST = (p,b)=> api('POST', p, b);
+const PUT  = (p,b)=> api('PUT',  p, b);
+
+// ── Toast ────────────────────────────────────────────────────────
+function toast(msg, ms=2800) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), ms);
+}
+
+// ── Theme ────────────────────────────────────────────────────────
+function initTheme() {
+  const saved = localStorage.getItem('admin-theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀️' : '🌙';
+}
+function toggleTheme() {
+  const cur  = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('admin-theme', next);
+  document.getElementById('theme-btn').textContent = next === 'dark' ? '☀️' : '🌙';
+}
+
+// ── Login ────────────────────────────────────────────────────────
+async function adminLogin() {
+  const phone = document.getElementById('admin-phone-input').value.trim();
+  const errEl = document.getElementById('login-err');
+  errEl.style.display = 'none';
+  try {
+    const { admin } = await POST('/api/admin/login', { phone });
+    adminPhone = phone;
+    localStorage.setItem('admin-phone', phone);
+    document.getElementById('login-screen').style.display  = 'none';
+    document.getElementById('admin-app').style.display = 'flex';
+    document.getElementById('admin-name-display').textContent  = admin.name;
+    document.getElementById('admin-phone-display').textContent = admin.phone;
+    document.getElementById('admin-avatar').textContent = admin.name.charAt(0).toUpperCase();
+    loadOverview();
+    loadPendingBadge();
+  } catch(e) {
+    errEl.textContent = e.message; errEl.style.display = 'block';
+  }
+}
+
+function adminLogout() {
+  adminPhone = null; localStorage.removeItem('admin-phone');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('admin-app').style.display = 'none';
+}
+
+// ── Navigation ───────────────────────────────────────────────────
+function showSection(id) {
+  SECTIONS.forEach(s => {
+    document.getElementById('section-' + s).classList.toggle('active', s === id);
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+s+"'"))
+        n.classList.toggle('active', s === id);
+    });
+  });
+  document.getElementById('topbar-title').textContent = SECTION_TITLES[id] || id;
+  // Load data for section
+  if (id === 'overview')    loadOverview();
+  if (id === 'pending')     loadPending();
+  if (id === 'farmers')     loadFarmers();
+  if (id === 'requests')    loadRequests();
+  if (id === 'alerts')      loadAlerts();
+  if (id === 'send-alert')  loadAlertFarmerSelect();
+  if (id === 'logs')        loadLogs();
+}
+
+// ── Overview ─────────────────────────────────────────────────────
+async function loadOverview() {
+  try {
+    const stats = await GET('/api/admin/stats');
+    document.getElementById('stats-grid').innerHTML = `
+      <div class="col-6 col-md-3"><div class="stat-card green">
+        <div class="s-label">Total Farmers</div>
+        <div class="s-value">${stats.totalFarmers}</div>
+        <div class="s-sub">${stats.approvedFarmers} approved</div>
+      </div></div>
+      <div class="col-6 col-md-3"><div class="stat-card amber">
+        <div class="s-label">Pending</div>
+        <div class="s-value">${stats.pendingFarmers}</div>
+        <div class="s-sub">awaiting review</div>
+      </div></div>
+      <div class="col-6 col-md-3"><div class="stat-card blue">
+        <div class="s-label">Service Requests</div>
+        <div class="s-value">${stats.pendingRequests}</div>
+        <div class="s-sub">${stats.scheduledRequests} scheduled</div>
+      </div></div>
+      <div class="col-6 col-md-3"><div class="stat-card red">
+        <div class="s-label">Alerts Sent</div>
+        <div class="s-value">${stats.totalAlerts}</div>
+        <div class="s-sub">across ${stats.totalPlots} plots</div>
+      </div></div>`;
+    document.getElementById('pending-badge').textContent = stats.pendingFarmers;
+    document.getElementById('pending-badge').style.display = stats.pendingFarmers > 0 ? 'inline' : 'none';
+
+    // Quick pending list
+    const farmers = await GET('/api/admin/farmers');
+    const pending = farmers.filter(f => f.status === 'pending').slice(0, 5);
+    document.getElementById('overview-pending-list').innerHTML = pending.length
+      ? pending.map(f => pendingRow(f, true)).join('')
+      : '<p style="font-size:.82rem;color:var(--text-m);">No pending approvals.</p>';
+
+    // Recent logs
+    const logs = await GET('/api/admin/logs');
+    document.getElementById('overview-log-list').innerHTML = logs.slice(0,5).map(l => `
+      <div class="log-row">
+        <div class="log-dot"></div>
+        <div>
+          <div class="log-action">${l.action.replace(/_/g,' ')}</div>
+          <div class="log-time">${l.admin_name} · ${new Date(l.created_at).toLocaleString()}</div>
+        </div>
+      </div>`).join('') || '<p style="font-size:.82rem;color:var(--text-m);">No activity yet.</p>';
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+function pendingRow(f, compact=false) {
+  return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+    <div style="width:34px;height:34px;border-radius:50%;background:var(--green-l);color:var(--green);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;">${f.name.charAt(0)}</div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-weight:600;font-size:.84rem;color:var(--text);">${f.name}</div>
+      <div style="font-size:.74rem;color:var(--text-m);">${f.phone} · ${f.region_name||'—'} · ${new Date(f.created_at).toLocaleDateString()}</div>
+    </div>
+    <button class="btn-green" style="padding:5px 10px;font-size:.72rem;" onclick="approveF(${f.id})">Approve</button>
+    <button class="btn-red"   style="padding:5px 10px;font-size:.72rem;" onclick="rejectF(${f.id})">Reject</button>
+  </div>`;
+}
+
+// ── Pending ──────────────────────────────────────────────────────
+async function loadPending() {
+  try {
+    const farmers = await GET('/api/admin/farmers');
+    const pending = farmers.filter(f => f.status === 'pending');
+    document.getElementById('pending-badge').textContent = pending.length;
+    document.getElementById('pending-badge').style.display = pending.length > 0 ? 'inline' : 'none';
+
+    if (!pending.length) {
+      document.getElementById('pending-table-wrap').innerHTML =
+        '<div style="text-align:center;padding:40px;color:var(--text-m);"><i class="bi bi-check-circle fs-1 d-block mb-2 opacity-25"></i>No pending approvals</div>';
+      return;
+    }
+    document.getElementById('pending-table-wrap').innerHTML = `
+      <table class="data-table">
+        <thead><tr>
+          <th>Farmer</th><th>Phone</th><th>Email</th><th>Region</th><th>Registered</th><th>Actions</th>
+        </tr></thead>
+        <tbody>${pending.map(f => `
+          <tr>
+            <td><strong>${f.name}</strong></td>
+            <td>${f.phone}</td>
+            <td>${f.email || '—'}</td>
+            <td>${f.region_name||'—'}</td>
+            <td>${new Date(f.created_at).toLocaleDateString()}</td>
+            <td>
+              <button class="btn-green" style="margin-right:6px;" onclick="approveF(${f.id})">✓ Approve</button>
+              <button class="btn-red"   onclick="rejectF(${f.id})">✕ Reject</button>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+async function loadPendingBadge() {
+  try {
+    const stats = await GET('/api/admin/stats');
+    document.getElementById('pending-badge').textContent = stats.pendingFarmers;
+    document.getElementById('pending-badge').style.display = stats.pendingFarmers > 0 ? 'inline' : 'none';
+  } catch(_) {}
+}
+
+async function approveF(id) {
+  try {
+    await POST(`/api/admin/farmers/${id}/approve`);
+    toast('✅ Farmer approved'); loadPending(); loadOverview();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+async function rejectF(id) {
+  const reason = prompt('Reason for rejection (optional):');
+  try {
+    await POST(`/api/admin/farmers/${id}/reject`, { reason: reason || '' });
+    toast('Farmer rejected'); loadPending(); loadOverview();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+// ── All Farmers ──────────────────────────────────────────────────
+async function loadFarmers() {
+  try {
+    const farmers = await GET('/api/admin/farmers');
+    farmersCache = farmers;
+    renderFarmersTable(farmers);
+    // Populate send-alert select too
+    const sel = document.getElementById('alert-farmer-select');
+    if (sel) {
+      sel.innerHTML = '<option value="">Select farmer…</option>';
+      farmers.filter(f=>f.status==='approved').forEach(f => {
+        const o = document.createElement('option'); o.value = f.id;
+        o.textContent = `${f.name} (${f.phone})`; sel.appendChild(o);
+      });
+    }
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+function filterFarmers(q) {
+  const filtered = farmersCache.filter(f =>
+    f.name.toLowerCase().includes(q.toLowerCase()) || f.phone.includes(q));
+  renderFarmersTable(filtered);
+}
+
+function renderFarmersTable(farmers) {
+  document.getElementById('farmers-table-wrap').innerHTML = `
+    <table class="data-table">
+      <thead><tr>
+        <th>Name</th><th>Phone</th><th>Region</th><th>Status</th>
+        <th>Plots</th><th>Alerts</th><th>Channels</th><th>Actions</th>
+      </tr></thead>
+      <tbody>${farmers.map(f => `
+        <tr>
+          <td style="font-weight:600;">${f.name}</td>
+          <td>${f.phone}</td>
+          <td>${f.region_name||'—'}</td>
+          <td><span class="badge-pill bp-${f.status}">${f.status}</span></td>
+          <td>${f.plot_count}</td>
+          <td>${f.alert_count}</td>
+          <td>${f.channel_count}</td>
+          <td>
+            <button class="btn-ghost" style="font-size:.72rem;" onclick="viewFarmer(${f.id})">
+              <i class="bi bi-eye"></i> View
+            </button>
+            ${f.status==='pending' ? `
+              <button class="btn-green" style="margin-left:4px;font-size:.72rem;" onclick="approveF(${f.id})">Approve</button>
+            ` : ''}
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+async function viewFarmer(id) {
+  try {
+    const d = await GET(`/api/admin/farmers/${id}`);
+    const f = d.farmer;
+    document.getElementById('farmer-detail-panel').style.display = 'block';
+    document.getElementById('farmer-detail-panel').innerHTML = `
+      <div class="detail-panel">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--green-l);color:var(--green);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem;">${f.name.charAt(0)}</div>
+          <div>
+            <div style="font-weight:800;font-size:1.05rem;">${f.name}</div>
+            <div style="font-size:.78rem;color:var(--text-m);">${f.phone} · ${f.email||'no email'}</div>
+          </div>
+          <span class="badge-pill bp-${f.status}" style="margin-left:auto;">${f.status}</span>
+          <button class="btn-ghost" style="font-size:.72rem;" onclick="document.getElementById('farmer-detail-panel').style.display='none'">✕</button>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <h4>Plots (${d.plots.length})</h4>
+            ${d.plots.map(p=>`<div style="font-size:.82rem;padding:6px 0;border-bottom:1px solid var(--border);">
+              <strong>${p.crop_name}</strong> · ${p.region_name} · ${p.area_ha} ha
+            </div>`).join('') || '<p style="font-size:.8rem;color:var(--text-m);">No plots</p>'}
+          </div>
+          <div class="col-md-4">
+            <h4>Alert Channels (${d.channels.length})</h4>
+            ${d.channels.map(c => `
+              <div class="channel-row">
+                <span class="ch-icon">${c.channel_type==='sms'?'📱':c.channel_type==='email'?'📧':'💬'}</span>
+                <span class="ch-dest">${c.destination}</span>
+                <span class="badge-pill bp-${c.channel_type}" style="font-size:.6rem;">${c.channel_type}</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" ${c.enabled?'checked':''} onchange="toggleChannel(${c.id},this.checked)"/>
+                  <span class="slider"></span>
+                </label>
+              </div>`).join('') || '<p style="font-size:.8rem;color:var(--text-m);">No channels</p>'}
+            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn-ghost" style="font-size:.72rem;" onclick="addChannel(${f.id},'sms')">+ SMS</button>
+              <button class="btn-ghost" style="font-size:.72rem;" onclick="addChannel(${f.id},'email')">+ Email</button>
+              <button class="btn-ghost" style="font-size:.72rem;" onclick="addChannel(${f.id},'whatsapp')">+ WhatsApp</button>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <h4>Recent Alerts (${d.alerts.length})</h4>
+            ${d.alerts.slice(0,4).map(a=>`<div style="font-size:.76rem;padding:4px 0;border-bottom:1px solid var(--border);color:var(--text-m);">
+              ${new Date(a.sent_at).toLocaleDateString()} · ${a.trigger_type} · ${a.channel}
+            </div>`).join('') || '<p style="font-size:.8rem;color:var(--text-m);">No alerts yet</p>'}
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border);">
+          ${f.status==='pending'?`<button class="btn-green" onclick="approveF(${f.id})">✓ Approve</button>`:''}
+          ${f.status==='pending'?`<button class="btn-red" onclick="rejectF(${f.id})">✕ Reject</button>`:''}
+          ${f.role!=='admin'?`<button class="btn-ghost" onclick="makeAdmin(${f.id})">⬆ Make Admin</button>`:''}
+        </div>
+      </div>`;
+    document.getElementById('farmer-detail-panel').scrollIntoView({ behavior: 'smooth' });
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+async function toggleChannel(id, enabled) {
+  try { await PUT(`/api/channels/${id}`, { enabled }); toast(enabled ? 'Channel enabled' : 'Channel disabled'); }
+  catch(e) { toast('Error: ' + e.message); }
+}
+
+async function addChannel(farmerId, type) {
+  const dest = prompt(`${type === 'email' ? 'Email address' : 'Phone number'} for ${type}:`);
+  if (!dest) return;
+  try {
+    await POST(`/api/farmers/${farmerId}/channels`, { channel_type: type, destination: dest });
+    toast('Channel added'); viewFarmer(farmerId);
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+async function makeAdmin(id) {
+  if (!confirm('Promote this farmer to admin role?')) return;
+  try { await POST(`/api/admin/farmers/${id}/make-admin`); toast('Promoted to admin'); viewFarmer(id); }
+  catch(e) { toast('Error: ' + e.message); }
+}
+
+// ── Service Requests ─────────────────────────────────────────────
+async function loadRequests() {
+  try {
+    const reqs = await GET('/api/admin/service-requests');
+    document.getElementById('requests-table-wrap').innerHTML = `
+      <table class="data-table">
+        <thead><tr>
+          <th>Farmer</th><th>Phone</th><th>Crop</th><th>Region</th><th>Area</th>
+          <th>Status</th><th>Requested</th><th>Scheduled</th><th>Update</th>
+        </tr></thead>
+        <tbody>${reqs.map(r=>`
+          <tr>
+            <td><strong>${r.farmer_name}</strong></td>
+            <td>${r.farmer_phone}</td>
+            <td>${r.crop_name}</td>
+            <td>${r.region_name}</td>
+            <td>${r.area_ha} ha</td>
+            <td><span class="badge-pill bp-${r.status}">${r.status}</span></td>
+            <td>${new Date(r.requested_at).toLocaleDateString()}</td>
+            <td>${r.scheduled_at || '—'}</td>
+            <td>
+              <select class="form-ctrl" style="padding:4px 8px;font-size:.74rem;width:110px;"
+                      onchange="updateReqStatus(${r.id},this.value)">
+                <option value="">Change…</option>
+                <option value="pending">Pending</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="completed">Completed</option>
+              </select>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+async function updateReqStatus(id, status) {
+  if (!status) return;
+  const scheduledAt = status === 'scheduled'
+    ? new Date(Date.now() + 2*86400000).toISOString().split('T')[0] : null;
+  try {
+    await PUT(`/api/admin/service-requests/${id}`, { status, scheduled_at: scheduledAt });
+    toast('Request updated to: ' + status); loadRequests();
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+// ── Alert History ────────────────────────────────────────────────
+async function loadAlerts() {
+  try {
+    const alerts = await GET('/api/admin/alerts');
+    document.getElementById('alerts-table-wrap').innerHTML = `
+      <table class="data-table">
+        <thead><tr>
+          <th>Farmer</th><th>Phone</th><th>Crop</th><th>Trigger</th>
+          <th>Channel</th><th>Replied</th><th>Sent</th>
+        </tr></thead>
+        <tbody>${alerts.map(a=>`
+          <tr>
+            <td><strong>${a.farmer_name}</strong></td>
+            <td>${a.phone}</td>
+            <td>${a.crop_name}</td>
+            <td><span class="badge-pill ${a.trigger_type==='heat_wave'?'bp-pending':'bp-approved'}">${a.trigger_type}</span></td>
+            <td><span class="badge-pill bp-${a.channel||'sms'}">${a.channel||'sms'}</span></td>
+            <td>${a.replied ? '✅' : '—'}</td>
+            <td>${new Date(a.sent_at).toLocaleString()}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+// ── Send Alert ───────────────────────────────────────────────────
+async function loadAlertFarmerSelect() {
+  try {
+    const farmers = await GET('/api/admin/farmers');
+    const sel = document.getElementById('alert-farmer-select');
+    sel.innerHTML = '<option value="">Select farmer…</option>';
+    farmers.filter(f=>f.status==='approved').forEach(f => {
+      const o = document.createElement('option');
+      o.value = f.id;
+      o.textContent = `${f.name} (${f.phone})`;
+      sel.appendChild(o);
+    });
+    sel.onchange = async () => {
+      if (!sel.value) return;
+      const channels = await api('GET', `/api/farmers/${sel.value}/channels`);
+      document.getElementById('alert-send-channels').innerHTML =
+        channels.length
+          ? 'Will send via: ' + channels.filter(c=>c.enabled).map(c=>`<span class="badge-pill bp-${c.channel_type}" style="margin-right:4px;">${c.channel_type}</span>`).join('')
+          : '<span style="color:var(--red);">No enabled channels for this farmer</span>';
+    };
+  } catch(e) {}
+}
+
+async function sendManualAlert() {
+  const fid = document.getElementById('alert-farmer-select').value;
+  const msg = document.getElementById('alert-message').value.trim();
+  if (!fid) { toast('Select a farmer first'); return; }
+  if (!msg) { toast('Message cannot be empty'); return; }
+  try {
+    await POST('/api/admin/send-alert', { farmer_id: parseInt(fid), message: msg });
+    toast('✅ Alert sent via all enabled channels');
+    document.getElementById('alert-message').value = '';
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+// ── Logs ─────────────────────────────────────────────────────────
+async function loadLogs() {
+  try {
+    const logs = await GET('/api/admin/logs');
+    document.getElementById('logs-container').innerHTML = logs.length
+      ? logs.map(l => `
+          <div class="log-row">
+            <div class="log-dot"></div>
+            <div style="flex:1;">
+              <div class="log-action">${l.action.replace(/_/g,' ')}</div>
+              <div style="font-size:.8rem;color:var(--text-2);margin-top:2px;">${l.details || '—'}</div>
+              <div class="log-time">${l.admin_name} · ${new Date(l.created_at).toLocaleString()}</div>
+            </div>
+          </div>`).join('')
+      : '<p style="color:var(--text-m);font-size:.84rem;">No activity recorded yet.</p>';
+  } catch(e) { toast('Error: ' + e.message); }
+}
+
+// ── Boot ─────────────────────────────────────────────────────────
+function hideAdminLoader() {
+  const l = document.getElementById('ecoray-loader');
+  if (!l) return;
+  l.classList.add('fade-out');
+  setTimeout(() => l.remove(), 600);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  setTimeout(hideAdminLoader, 1600);
+
+  // Enter key on login
+  document.getElementById('admin-phone-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') adminLogin();
+  });
+
+  // Restore session
+  const saved = localStorage.getItem('admin-phone');
+  if (saved) {
+    document.getElementById('admin-phone-input').value = saved;
+    adminLogin();
+  }
+});
+</script>
+</body>
+</html>

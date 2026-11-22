@@ -1,0 +1,235 @@
+/* App-specific overrides on top of AgriCulture template */
+
+/* ══ LIGHT MODE HEADER — slightly reduced opacity ═══════════════ */
+#header {
+  background: rgba(255,255,255,.88) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 1px 10px rgba(0,0,0,.07) !important;
+}
+
+/* ══ DARK MODE ══════════════════════════════════════════════════
+   Fixed deep green background, all text white.
+═══════════════════════════════════════════════════════════════ */
+[data-theme="dark"] {
+  --background-color:              #0d1f0f;
+  --default-color:                 #ffffff;
+  --heading-color:                 #ffffff;
+  --surface-color:                 #122614;
+  --accent-color:                  #4fc870;
+  --contrast-color:                #ffffff;
+  --nav-color:                     #ffffff;
+  --nav-hover-color:               #4fc870;
+  --nav-mobile-background-color:   #0d1f0f;
+  --nav-dropdown-background-color: #122614;
+  --nav-dropdown-color:            #ffffff;
+  --nav-dropdown-hover-color:      #4fc870;
+  --border-color:                  rgba(255,255,255,.12);
+}
+
+/* Body + every surface */
+[data-theme="dark"] body,
+[data-theme="dark"] main,
+[data-theme="dark"] section { background-color: #0d1f0f !important; }
+
+/* ALL text → white */
+[data-theme="dark"] p,
+[data-theme="dark"] h1,[data-theme="dark"] h2,[data-theme="dark"] h3,
+[data-theme="dark"] h4,[data-theme="dark"] h5,[data-theme="dark"] h6,
+[data-theme="dark"] span:not(.badge):not(.live-dot):not(.unread-dot),
+[data-theme="dark"] li,
+[data-theme="dark"] label,
+[data-theme="dark"] a,
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] small,
+[data-theme="dark"] .form-text,
+[data-theme="dark"] .s-label,
+[data-theme="dark"] .s-unit,
+[data-theme="dark"] .nav-color { color: #ffffff !important; }
+
+/* Links keep accent on hover */
+[data-theme="dark"] a:hover { color: #4fc870 !important; }
+
+/* Header */
+[data-theme="dark"] #header {
+  background: rgba(13,31,15,.95) !important;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 10px rgba(0,0,0,.3) !important;
+}
+
+/* Cards / surfaces */
+[data-theme="dark"] .card,
+[data-theme="dark"] .detail-panel,
+[data-theme="dark"] .plot-block,
+[data-theme="dark"] .info-panel {
+  background: #122614 !important;
+  border-color: rgba(255,255,255,.1) !important;
+  color: #ffffff !important;
+}
+[data-theme="dark"] .card-body,
+[data-theme="dark"] .card-body * { color: #ffffff !important; }
+
+/* ── Form inputs — inverted in dark mode ─────────────────────── */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="tel"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] textarea {
+  background: #1a3a1e !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,.2) !important;
+  caret-color: #4fc870;
+}
+[data-theme="dark"] .form-control::placeholder,
+[data-theme="dark"] input::placeholder { color: rgba(255,255,255,.4) !important; }
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus,
+[data-theme="dark"] input:focus {
+  border-color: #4fc870 !important;
+  box-shadow: 0 0 0 3px rgba(79,200,112,.2) !important;
+  background: #1a3a1e !important;
+}
+[data-theme="dark"] .form-select option { background: #122614; color: #fff; }
+
+/* Sections with light-background class */
+[data-theme="dark"] .light-background,
+[data-theme="dark"] .section.light-background { background-color: #0f2411 !important; }
+
+/* Stat boxes */
+[data-theme="dark"] .stat-box     { background: #1a3a1e !important; border-color: rgba(255,255,255,.1) !important; }
+[data-theme="dark"] .stat-box.hi  { background: rgba(79,200,112,.12) !important; border-color: rgba(79,200,112,.25) !important; }
+[data-theme="dark"] .stat-box .s-value { color: #ffffff !important; }
+[data-theme="dark"] .stat-box.hi .s-value { color: #4fc870 !important; }
+
+/* Rec cards */
+[data-theme="dark"] .rec-card.apply-no  { background: rgba(79,200,112,.08) !important; border-color: rgba(79,200,112,.2) !important; }
+[data-theme="dark"] .rec-card.apply-yes { background: rgba(220,80,80,.1)   !important; border-color: rgba(220,80,80,.2)  !important; }
+[data-theme="dark"] .rec-card.heat-wave { background: rgba(220,160,40,.1)  !important; border-color: rgba(220,160,40,.2) !important; }
+
+/* Section titles */
+[data-theme="dark"] .section-title h2,
+[data-theme="dark"] .section-title p { color: #ffffff !important; }
+
+/* Demo banner already dark, leave it */
+[data-theme="dark"] .hero-section img { filter: brightness(.85); }
+
+/* Leaflet popups */
+[data-theme="dark"] .leaflet-popup-content-wrapper {
+  background: #122614 !important; color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
+}
+[data-theme="dark"] .leaflet-popup-tip { background: #122614 !important; }
+
+/* Alert info box */
+[data-theme="dark"] .alert-info  { background: #1a3a1e !important; border-color: rgba(79,200,112,.2) !important; color: #fff !important; }
+[data-theme="dark"] .alert-success { background: #1a3a1e !important; border-color: rgba(79,200,112,.3) !important; color: #fff !important; }
+[data-theme="dark"] .alert-warning { background: #2b2010 !important; border-color: rgba(220,160,40,.3) !important; color: #fff !important; }
+
+/* ══ LEAFLET MAPS ═══════════════════════════════════════════════ */
+.leaflet-container { z-index: 1 !important; }
+#signup-map, #dashboard-map { min-height: 260px; position: relative; z-index: 1; }
+.leaflet-control-container { z-index: 800 !important; }
+.leaflet-popup-pane        { z-index: 700 !important; }
+
+/* ══ STEP DOTS ══════════════════════════════════════════════════ */
+.step-dot {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: #f0f0f0; border: 2px solid #dee2e6;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: .78rem; color: #6c757d;
+  flex-shrink: 0; transition: all .2s;
+}
+.step-dot.active { background: var(--accent-color); border-color: var(--accent-color); color: #fff; box-shadow: 0 0 0 4px rgba(17,101,48,.15); }
+.step-dot.done   { background: #d1f0da; border-color: #2ea359; color: #116530; }
+.step-line { height: 2px; background: #dee2e6; margin: 0 6px; transition: background .3s; }
+.step-line.done { background: #2ea359; }
+
+[data-theme="dark"] .step-dot        { background: #1a3a1e; border-color: rgba(255,255,255,.15); color: #aaa; }
+[data-theme="dark"] .step-dot.active { background: var(--accent-color); border-color: var(--accent-color); color: #fff; }
+[data-theme="dark"] .step-dot.done   { background: rgba(79,200,112,.2); border-color: #4fc870; color: #4fc870; }
+[data-theme="dark"] .step-line       { background: rgba(255,255,255,.12); }
+[data-theme="dark"] .step-line.done  { background: #4fc870; }
+
+/* ══ LIVE DOT ═══════════════════════════════════════════════════ */
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent-color); display: inline-block; flex-shrink: 0;
+  animation: live-ping 2s infinite;
+}
+@keyframes live-ping {
+  0%   { box-shadow: 0 0 0 0 rgba(17,101,48,.5); }
+  70%  { box-shadow: 0 0 0 7px rgba(17,101,48,0); }
+  100% { box-shadow: 0 0 0 0 rgba(17,101,48,0); }
+}
+@keyframes heatpulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,193,7,.5); }
+  50%      { box-shadow: 0 0 0 7px rgba(255,193,7,0); }
+}
+
+/* ══ PLOT CARDS ═════════════════════════════════════════════════ */
+.plot-block { border-radius: 16px; overflow: hidden; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,.07); border: 1px solid #e9ecef; background: #fff; transition: box-shadow .2s, transform .2s; }
+.plot-block:hover { box-shadow: 0 8px 36px rgba(0,0,0,.11); transform: translateY(-2px); }
+.plot-img-band { position: relative; height: 180px; overflow: hidden; }
+.plot-img-band img { width:100%; height:100%; object-fit:cover; transition: transform .4s ease; }
+.plot-block:hover .plot-img-band img { transform: scale(1.04); }
+.plot-img-band-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,.55) 0%, transparent 65%); display: flex; align-items: flex-end; padding: 16px 20px; }
+.plot-img-title { color: #fff !important; font-weight: 800; font-size: 1.25rem; letter-spacing: -.4px; }
+.plot-img-meta  { color: rgba(255,255,255,.65) !important; font-size: .74rem; margin-top: 3px; }
+.plot-body { padding: 20px 22px; }
+[data-theme="dark"] .plot-block { background: #122614 !important; border-color: rgba(255,255,255,.08) !important; }
+[data-theme="dark"] .plot-body * { color: #ffffff !important; }
+
+/* ══ REC CARD ═══════════════════════════════════════════════════ */
+.rec-card { border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; border: 1.5px solid transparent; }
+.rec-card.apply-yes { background: #fff5f5; border-color: #f5c6c6; }
+.rec-card.apply-no  { background: #f0f9f3; border-color: #c8e6d0; }
+.rec-card.heat-wave { background: #fffbf0; border-color: #fde68a; }
+
+/* ══ STAT GRID ══════════════════════════════════════════════════ */
+.stat-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-top:14px; }
+@media(min-width:580px) { .stat-grid { grid-template-columns: repeat(4,1fr); } }
+.stat-box { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; padding: 14px; text-align: center; }
+.stat-box.hi { background: #f0f9f3; border-color: #c8e6d0; }
+.stat-box .s-label { font-size:.58rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#6c757d; margin-bottom:5px; }
+.stat-box .s-value { font-size:1.6rem; font-weight:900; color:#212529; line-height:1; letter-spacing:-1.5px; }
+.stat-box.hi .s-value { color: var(--accent-color); }
+.stat-box .s-unit  { font-size:.66rem; color:#6c757d; margin-top:3px; font-weight:500; }
+
+/* ══ BADGE PILLS ════════════════════════════════════════════════ */
+.status-pill, .badge-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  border-radius: 99px; padding: 3px 10px;
+  font-size: .68rem; font-weight: 600;
+}
+.badge-green { background: #d1f0da; color: #116530; }
+.badge-amber { background: #fdf0d8; color: #b87820; }
+.badge-red   { background: #fbe8e8; color: #b03535; }
+.badge-blue  { background: #ddeaf8; color: #1a56a4; }
+
+/* ══ SMS PHONE FRAME ════════════════════════════════════════════ */
+.sms-phone-frame { background: #111; border-radius: 24px; padding: 18px 15px 24px; margin-bottom: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.18); border: 1px solid rgba(255,255,255,.07); }
+.sms-phone-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,.07); }
+.sms-phone-label  { font-size:.62rem; font-weight:600; letter-spacing:1.4px; text-transform:uppercase; color:rgba(255,255,255,.28); }
+.sms-phone-status { display:flex; align-items:center; gap:5px; font-size:.62rem; color:rgba(255,255,255,.28); }
+.sms-bubble { background: #1c1c1e; border-radius: 16px 16px 16px 4px; padding: 13px 16px; margin-bottom: 10px; }
+.sms-bubble.heat-wave-alert { background: #2b1b06; border: 1px solid rgba(196,125,32,.2); }
+.sms-bubble .sms-time { font-size:.62rem; color:rgba(255,255,255,.3); margin-bottom:8px; display:flex; align-items:center; gap:5px; }
+.sms-bubble .sms-text { font-size:.86rem; line-height:1.65; color:rgba(255,255,255,.85); }
+.sms-bubble .sms-actions { margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; }
+.sms-bubble.replied { opacity:.5; }
+.sms-replied-badge { display:inline-flex; align-items:center; gap:4px; color:#4ade80; font-size:.72rem; font-weight:600; margin-top:8px; }
+.unread-dot { width:6px; height:6px; border-radius:50%; background:#2ea359; display:inline-block; flex-shrink:0; animation:live-ping 2s infinite; }
+
+/* ══ TOAST ══════════════════════════════════════════════════════ */
+#toast.show { opacity:1 !important; transform:translateX(-50%) translateY(0) !important; }
+
+/* ══ MOBILE NAV ═════════════════════════════════════════════════ */
+.nav-btn-mobile.active { color: var(--accent-color) !important; }
+
+/* ══ AOS always visible ═════════════════════════════════════════ */
+[data-aos] { opacity: 1 !important; transform: none !important; }
+
+/* ══ PROGRESS BAR ═══════════════════════════════════════════════ */
+.progress-thin { height: 5px; border-radius: 99px; }
